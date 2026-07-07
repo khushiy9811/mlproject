@@ -2,8 +2,7 @@ import logging
 import os
 import sys
 from datetime import datetime
-from exception import CustomException
-
+from src.exception import CustomException
 # Create a unique log file name using the current date and time
 LOG_FILE = f"{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
 
