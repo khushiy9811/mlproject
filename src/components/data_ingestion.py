@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 from src.exception import CustomException
 from src.logger import logging
 from src.components.data_transformation import DataTransformation
-from src.components.data_transformation import DataTransformationConfig
+from src.components.model_trainer import ModelTrainer
 
 
 @dataclass
@@ -29,11 +29,12 @@ class DataIngestion:
         logging.info("Entered the Data Ingestion component")
 
         try:
-            # Read dataset
-            df = pd.read_csv("notebook/data/Stud.csv")
+            # Read the dataset
+
+            df = pd.read_csv("notebook/data/stud.csv")
             logging.info("Dataset read successfully")
 
-            # Create artifacts folder if it doesn't exist
+            # Create artifacts folder
             os.makedirs(
                 os.path.dirname(self.ingestion_config.train_data_path),
                 exist_ok=True
@@ -48,21 +49,21 @@ class DataIngestion:
 
             logging.info("Train-Test Split Initiated")
 
-            # Split data
+            # Split the dataset
             train_set, test_set = train_test_split(
                 df,
                 test_size=0.2,
                 random_state=42
             )
 
-            # Save train data
+            # Save training data
             train_set.to_csv(
                 self.ingestion_config.train_data_path,
                 index=False,
                 header=True
             )
 
-            # Save test data
+            # Save testing data
             test_set.to_csv(
                 self.ingestion_config.test_data_path,
                 index=False,
@@ -79,11 +80,28 @@ class DataIngestion:
         except Exception as e:
             logging.info("Exception occurred during Data Ingestion")
             raise CustomException(e, sys)
-        
 
-if __name__=="__main__":
-    obj=DataIngestion()
-    train_data, test_data=obj.initiate_data_ingestion()
 
-    data_transformation=DataTransformation()
-    data_transformation.initiate_data_transformation(train_data,test_data)
+if __name__ == "__main__":
+
+    # Data Ingestion
+    obj = DataIngestion()
+    train_data, test_data = obj.initiate_data_ingestion()
+
+    # Data Transformation
+    data_transformation = DataTransformation()
+
+    train_arr, test_arr, _ = data_transformation.initiate_data_transformation(
+        train_data,
+        test_data
+    )
+
+    # Model Training
+    model_trainer = ModelTrainer()
+
+    print(
+        model_trainer.initiate_model_trainer(
+            train_arr,
+            test_arr
+        )
+    )
